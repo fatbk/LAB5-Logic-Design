@@ -1,0 +1,51 @@
+`timescale 1ns / 1ns
+
+module floating_point_addition_tb;
+
+    // Khai báo các tín hiệu đầu vào
+    reg [31:0] float1;
+    reg [31:0] float2;
+    logic clk;
+    // Khai báo tín hiệu kết quả đầu ra từ mô-đun
+    wire [31:0] result;
+
+    // Khởi tạo mô-đun
+    floating_point_addition uut(
+        .clk(clk),
+        .float1(float1),
+        .float2(float2),
+        .result(result)
+    );
+
+    initial begin
+    #0 clk = 0;
+    forever #5 clk = ~clk;
+  end
+    // Mô phỏng các điều kiện test
+    initial begin
+        /*
+        float1 = 32'h40400000; // 3.0
+        float2 = 32'h40000000; // 2.0
+        #10;
+        */
+        
+        float1 = 32'hC0400000; // -3.0
+        float2 = 32'hC0000000; // -2.0
+        #10;
+
+        /*
+        float1 = 32'h40400000; // 3.0
+        float2 = 32'hC0000000; // -2.0
+        #10;
+
+       
+        float1 = 32'hC0400000; // -3.0
+        float2 = 32'h40000000; // 2.0
+        #10;
+
+        */     
+
+        $finish;
+    end
+
+endmodule

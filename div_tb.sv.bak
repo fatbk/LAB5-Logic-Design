@@ -1,0 +1,61 @@
+module tb_fp_div;
+
+    // Declare variables to hold the inputs and output
+    logic [31:0] a, b;
+    logic [31:0] result;
+
+    // Instantiate the fp_div module
+    fp_div uut (
+        .a(a),
+        .b(b),
+        .result(result)
+    );
+
+    // Task to print results in a human-readable format
+    task print_result(input logic [31:0] a, input logic [31:0] b, input logic [31:0] result);
+        $display("a = %h (%f), b = %h (%f), result = %h (%f)", a, $bitstoshortreal(a), b, $bitstoshortreal(b), result, $bitstoshortreal(result));
+    endtask
+
+    // Initial block to apply test vectors
+    initial begin
+        // Test case 1: Simple division
+        a = 32'h40700000; // 3.0
+        b = 32'32'hc0d80000; // 2.0
+        #10;
+        print_result(a, b, result);
+
+        // Test case 2: Division by 1
+        a = 32'h40400000; // 3.0
+        b = 32'h3f800000; // 1.0
+        #10;
+        print_result(a, b, result);
+
+        // Test case 3: Division by itself
+        a = 32'h40400000; // 3.0
+        b = 32'h40400000; // 3.0
+        #10;
+        print_result(a, b, result);
+
+        // Test case 4: Division of small numbers
+        a = 32'h3f800000; // 1.0
+        b = 32'h3f000000; // 0.5
+        #10;
+        print_result(a, b, result);
+
+        // Test case 5: Division by zero (should handle as special case in actual implementation)
+        a = 32'h40400000; // 3.0
+        b = 32'h00000000; // 0.0
+        #10;
+        print_result(a, b, result);
+
+        // Test case 6: Zero divided by a number
+        a = 32'h00000000; // 0.0
+        b = 32'h40000000; // 2.0
+        #10;
+        print_result(a, b, result);
+
+        // End of test
+        $finish;
+    end
+
+endmodule

@@ -1,0 +1,61 @@
+module tb_Float_Add;
+
+// Inputs
+reg clk;
+reg rst;
+reg start;
+reg [15:0] X;
+reg [15:0] Y;
+
+// Outputs
+wire [15:0] sum;
+wire valid;
+
+// Instantiate the Unit Under Test (UUT)
+Float_Add_16bit uut (
+    .clk(clk), 
+    .rst(rst), 
+    .start(start), 
+    .X(X), 
+    .Y(Y), 
+    .valid(valid), 
+    .sum(sum)
+);
+
+// Clock generation
+initial begin
+    clk = 0;
+    forever #5 clk = ~clk; // 10ns period clock
+end
+
+// Test cases
+initial begin
+    // Initialize Inputs
+    rst = 0;
+    start = 0;
+    X = 16'b0;
+    Y = 16'b0;
+
+    // Reset the UUT
+    #10;
+    rst = 1;
+    #10;
+    rst = 0;
+    #10;
+    rst = 1;
+
+    // Test Case 1: Adding two positive numbers
+    X = 16'b0100000000000100; 
+    Y = 16'b0011111111111110;
+    start = 1;
+    #10;
+    start = 0;
+    #50; // Wait for valid output
+   
+  
+
+   
+    $stop; // Stop the simulation
+end
+
+endmodule

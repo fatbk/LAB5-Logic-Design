@@ -1,0 +1,39 @@
+module fp_div (
+    input  logic [31:0] a,     // Operand a
+    input  logic [31:0] b,     // Operand b
+    output logic [31:0] result // Result of a / b
+);
+
+    // Extract sign, exponent, and mantissa for both inputs
+    logic sign_a, sign_b, sign_res;
+    logic [7:0] exp_a, exp_b, exp_res2,exp_res;
+    logic [23:0] mant_a, mant_b, mant_res;
+
+    // Initialize
+    assign sign_a = a[31];
+    assign exp_a  = a[30:23];
+    assign mant_a = {1'b1, a[22:0]}; // Implicit 1 in mantissa
+
+    assign sign_b = b[31];
+    assign exp_b  = b[30:23];
+    assign mant_b = {1'b1, b[22:0]}; // Implicit 1 in mantissa
+
+    assign sign_res = sign_a ^ sign_b;
+
+    // Calculate exponent of the result
+    assign exp_res = exp_a - exp_b + 8'd127; // Adjust bias
+
+    // Calculate mantissa of the result
+    logic [47:0] mant_res_tmp;
+    assign mant_res_tmp = (mant_a << 23) / mant_b; // Division and normalization
+
+    // Normalize result
+        assign exp_res2  = (mant_res_tmp[47])?exp_res - 1: exp_res ;
+        assign mant_res = (mant_res_tmp[47])? mant_res_tmp[46:24]:mant_res_tmp[45:23];
+        
+  
+
+    // Assemble the final result
+    assign result = {sign_res, exp_res, mant_res[22:0]};
+
+endmodule

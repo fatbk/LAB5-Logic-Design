@@ -1,0 +1,70 @@
+module multiplication(
+input logic clk,
+input logic rst,
+input logic start,
+input logic [31:0] X,Y,	
+output logic [31:0] product,	
+output logic valid
+
+);
+
+logic X_sign;
+logic Y_sign;
+//logic [7:0] X_exp;
+//logic [7:0] Y_exp;
+logic [23:0] X_mant, Y_mant;
+logic [1:0] state;
+logic [46:0] product_mant;
+logic sign;
+logic [7:0] sum_exp;
+
+initial 
+	begin
+	  product <=32'd0;
+		state <= 2'b00;
+		valid <=1'b0;
+	end
+
+assign  X_mant = {1'b1,X[22:0]};
+assign		Y_mant = {1'b1,Y[22:0]};
+assign  X_sign = X[31];
+assign  Y_sign = Y[31];
+always @(posedge clk or negedge rst)
+	begin
+	if(start)
+	begin		
+		case(state)
+		2'b00:
+		begin		
+		  sign <=	(X_sign ^ Y_sign ==0) ? X_sign : 1;	
+			product_mant <= X_mant*Y_mant;		
+			state <= 2'b01;
+		end
+		2'b01:
+		begin				
+			sum_exp <= X[30:23]+Y[30:23]-127;
+			state <= 2'b10;
+		end
+		2'b10:
+		begin
+			product_mant <= (product_mant[46])?product_mant >>1 : product_mant;
+			sum_exp <=(product_mant[46])?sum_exp+1 : sum_exp;
+			state <= 2'b11;
+		end
+    2'b11:
+    begin
+      valid <=1'b1;	
+			product <= {sign,sum_exp,product_mant[45:23]};
+		end
+		endcase
+	end
+	end
+endmodule				
+
+
+
+
+
+
+
+ 
